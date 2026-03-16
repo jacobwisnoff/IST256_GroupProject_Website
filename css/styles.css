@@ -10,14 +10,39 @@ body {
 }
 
 header.welcome-banner {
-	background: linear-gradient(135deg, #4a90e2 0%, #357ab7 100%);
-	padding: 20px 10px;
-	text-align: center;
+	background: linear-gradient(135deg, #1a3a6f 0%, #2e5ea8 40%, #4a90e2 100%);
+	padding: 1rem 0;
+	color: #fff;
+	box-shadow: 0 4px 14px rgba(0,0,0,0.2);
 }
 
-header.welcome-banner img {
-    border: 3px solid rgba(255,255,255,0.6);
-    border-radius: 8px;
+header.welcome-banner .brand-logo {
+	border: 2px solid rgba(255,255,255,0.8);
+	border-radius: 12px;
+	box-shadow: 0 0 20px rgba(0,0,0,0.25);
+}
+
+header.welcome-banner .brand-title {
+	font-size: 1.8rem;
+	font-weight: 700;
+	margin: 0;
+	letter-spacing: 0.8px;
+}
+
+header.welcome-banner .brand-tagline {
+	font-size: 0.95rem;
+	opacity: 0.88;
+	margin: 0;
+}
+
+header.welcome-banner .btn {
+	border-color: rgba(255,255,255,0.85);
+	color: #fff;
+	font-weight: 600;
+}
+
+header.welcome-banner .btn:hover {
+	background: rgba(255,255,255,0.2);
 }
 
 nav {
@@ -86,22 +111,40 @@ nav {
 }
 
 
+footer.website-terms {
+	background: linear-gradient(90deg, #0a1f43 0%, #112b55 100%);
+	color: #e5eaf6;
+	padding: 1.25rem 1rem;
+	text-align: center;
+	border-top: 2px solid #1e4f8d;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+footer.website-terms .container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.8rem;
+	align-items: center;
+}
+
+footer.website-terms p {
+	margin: 0;
+	font-size: 0.88rem;
+	opacity: 0.95;
+}
+
 footer.website-terms a {
-	color: #fff;
+	color: #a6d1ff;
 	text-decoration: none;
+	transition: color 0.2s ease, text-decoration 0.2s ease;
 }
 
 footer.website-terms a:hover {
+	color: #ffffff;
 	text-decoration: underline;
-	color: #d0e8ff;
 }
 
-footer.website-terms {
-	background: #222;
-	color: #fff;
-	padding: 12px 10px;
-	text-align: center;
-}
 
 /* additional styling for improved professionalism */
 .navbar-brand {
