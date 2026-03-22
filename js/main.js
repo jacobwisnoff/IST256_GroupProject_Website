@@ -190,46 +190,180 @@ function displayShopper(shopper) {
   }
 
   // submit handlers
-  signupForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    triedSubmitSignup = true;
-
-    if (!validateSignup(true)) {
-      return;
-    }
-
-    const shopper = saveShopper();
-    console.log('Shopper saved', shopper);
-
-    // Reset form after successful signup
-    signupForm.reset();
-    triedSubmitSignup = false;
-
-    alert('Sign-up successful! Your account information has been saved.');
-  });
-
-  loginForm.addEventListener('submit', (e) => {
-    triedSubmitLogin = true;
-    if (!validateLogin(true)) {
+  if (signupForm) {
+    signupForm.addEventListener('submit', (e) => {
       e.preventDefault();
+      triedSubmitSignup = true;
+
+      if (!validateSignup(true)) {
+        return;
+      }
+
+      const shopper = saveShopper();
+      console.log('Shopper saved', shopper);
+
+      // Reset form after successful signup
+      signupForm.reset();
+      triedSubmitSignup = false;
+
+      alert('Sign-up successful! Your account information has been saved.');
+    });
+
+    // input listeners for signup
+    [firstName, lastName, email, password, phone, age, address].forEach((input) => {
+      input.addEventListener('input', () => {
+        if (triedSubmitSignup) {
+          validateSignup(true);
+        }
+      });
+    });
+  }
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      triedSubmitLogin = true;
+      if (!validateLogin(true)) {
+        e.preventDefault();
+      }
+    });
+
+    // input listeners for login
+    [loginEmail, loginPassword].forEach((input) => {
+      input.addEventListener('input', () => {
+        if (triedSubmitLogin) {
+          validateLogin(true);
+        }
+      });
+    });
+  }
+
+  // Product form validation
+  const productForm = document.getElementById('productForm');
+  const productDescription = document.getElementById('productDescription');
+  const productCategory = document.getElementById('productCategory');
+  const unitOfMeasure = document.getElementById('unitOfMeasure');
+  const productPrice = document.getElementById('productPrice');
+  const productWeight = document.getElementById('productWeight');
+
+  const productDescriptionError = document.getElementById('productDescriptionError');
+  const productCategoryError = document.getElementById('productCategoryError');
+  const unitOfMeasureError = document.getElementById('unitOfMeasureError');
+  const productPriceError = document.getElementById('productPriceError');
+  const productResult = document.getElementById('productResult');
+
+  let triedSubmitProduct = false;
+
+  function validateProduct(showAll = true) {
+    let valid = true;
+
+    // Product description required
+    if (!productDescription.value.trim()) {
+      if (showAll) showError(productDescription, productDescriptionError, 'Product description is required');
+      valid = false;
+    } else {
+      clearError(productDescription, productDescriptionError);
     }
-  });
 
-  // input listeners for signup
-  [firstName, lastName, email, password, phone, age, address].forEach((input) => {
-    input.addEventListener('input', () => {
-      if (triedSubmitSignup) {
-        validateSignup(true);
-      }
-    });
-  });
+    // Product category required (must not be empty string)
+    if (!productCategory.value) {
+      if (showAll) showError(productCategory, productCategoryError, 'Product category is required');
+      valid = false;
+    } else {
+      clearError(productCategory, productCategoryError);
+    }
 
-  // input listeners for login
-  [loginEmail, loginPassword].forEach((input) => {
-    input.addEventListener('input', () => {
-      if (triedSubmitLogin) {
-        validateLogin(true);
+    // Unit of measure required
+    if (!unitOfMeasure.value) {
+      if (showAll) showError(unitOfMeasure, unitOfMeasureError, 'Unit of measure is required');
+      valid = false;
+    } else {
+      clearError(unitOfMeasure, unitOfMeasureError);
+    }
+
+    // Product price required and must be greater than 0
+    const priceValue = Number(productPrice.value);
+    if (!productPrice.value || productPrice.value === '') {
+      if (showAll) showError(productPrice, productPriceError, 'Product price is required');
+      valid = false;
+    } else if (isNaN(priceValue) || priceValue <= 0) {
+      if (showAll) showError(productPrice, productPriceError, 'Product price must be greater than 0');
+      valid = false;
+    } else {
+      clearError(productPrice, productPriceError);
+    }
+
+    return valid;
+  }
+
+  function saveProduct() {
+    const product = {
+      id: Date.now(),
+      description: productDescription.value.trim(),
+      category: productCategory.value,
+      unitOfMeasure: unitOfMeasure.value,
+      price: Number(productPrice.value),
+      weight: productWeight.value ? Number(productWeight.value) : null,
+      createdAt: new Date().toISOString()
+    };
+
+    // Get existing products from localStorage
+    const productsRaw = localStorage.getItem('products');
+    let products = [];
+    try {
+      products = productsRaw ? JSON.parse(productsRaw) : [];
+    } catch {
+      products = [];
+    }
+
+    products.push(product);
+    localStorage.setItem('products', JSON.stringify(products, null, 2));
+
+    // Display the saved product
+    if (productResult) {
+      const pre = document.createElement('pre');
+      pre.className = 'bg-light p-3 border rounded';
+      pre.textContent = JSON.stringify(product, null, 2);
+      productResult.innerHTML = '<h5 class="mb-2">New Product JSON</h5>';
+      productResult.appendChild(pre);
+    }
+
+    return product;
+  }
+
+  // Product form submit handler
+  if (productForm) {
+    productForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      triedSubmitProduct = true;
+
+      if (!validateProduct(true)) {
+        return;
       }
+
+      const product = saveProduct();
+      console.log('Product saved', product);
+
+      // Reset form after successful submission
+      productForm.reset();
+      triedSubmitProduct = false;
+
+      alert('Product added successfully!');
     });
-  });
+
+    // Input listeners for product form
+    [productDescription, productCategory, unitOfMeasure, productPrice].forEach((input) => {
+      input.addEventListener('input', () => {
+        if (triedSubmitProduct) {
+          validateProduct(true);
+        }
+      });
+      input.addEventListener('change', () => {
+        if (triedSubmitProduct) {
+          validateProduct(true);
+        }
+      });
+    });
+  }
 });
+  
+
