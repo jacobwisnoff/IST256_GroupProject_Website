@@ -21,7 +21,7 @@ Adrian: JSON Objects display on page after user sign-up
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
-   
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -92,6 +92,43 @@ Adrian: JSON Objects display on page after user sign-up
         </div>
     </aside>
 
+    <!-- Search Products Section -->
+    <section class="main-content mt-4 mb-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Browse Our Products</h2>
+            <div class="row mb-4">
+                <div class="col-md-6 offset-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">Search Products</h5>
+                            <form id="indexSearchForm" class="mb-3">
+                                <div class="mb-3">
+                                    <label for="indexSearchDescription" class="form-label">Description</label>
+                                    <input type="text" class="form-control" id="indexSearchDescription" placeholder="Search by description">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="indexSearchCategory" class="form-label">Category</label>
+                                    <select class="form-select" id="indexSearchCategory">
+                                        <option value="">All Categories</option>
+                                        <option value="electronics">Electronics</option>
+                                        <option value="clothing">Clothing</option>
+                                        <option value="books">Books</option>
+                                        <option value="home">Home & Garden</option>
+                                        <option value="sports">Sports & Outdoors</option>
+                                    </select>
+                                </div>
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-primary px-5" id="indexSearchBtn">Search</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="indexSearchResults" class="row"></div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="website-terms">
         <div class="container">
@@ -101,7 +138,7 @@ Adrian: JSON Objects display on page after user sign-up
         </div>
     </footer>
 
-
+    <script src="js/main.js"></script>
 </body>
 
 </html>

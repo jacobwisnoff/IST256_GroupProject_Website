@@ -364,6 +364,90 @@ function displayShopper(shopper) {
       });
     });
   }
+
+  // jQuery Search Functionality
+  function getProductsFromStorage() {
+    const productsRaw = localStorage.getItem('products');
+    try {
+      return productsRaw ? JSON.parse(productsRaw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function displayProductCards(products, containerId) {
+    const $container = $('#' + containerId);
+    $container.empty();
+
+    if (products.length === 0) {
+      $container.html('<p class="col-12 text-center text-muted">No products found.</p>');
+      return;
+    }
+
+    products.forEach((product) => {
+      const card = `
+        <div class="col-md-4 col-sm-6 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">${product.description}</h5>
+              <p class="card-text">
+                <strong>Category:</strong> ${product.category}<br>
+                <strong>Price:</strong> $${product.price.toFixed(2)}<br>
+                <strong>Unit:</strong> ${product.unitOfMeasure}
+                ${product.weight ? `<br><strong>Weight:</strong> ${product.weight} kg` : ''}
+              </p>
+              <small class="text-muted">Added: ${new Date(product.createdAt).toLocaleDateString()}</small>
+            </div>
+          </div>
+        </div>
+      `;
+      $container.append(card);
+    });
+  }
+
+  // Product Management page search
+  $('#searchBtn').click(function() {
+    const description = $('#searchDescription').val().toLowerCase();
+    const category = $('#searchCategory').val();
+
+    let products = getProductsFromStorage();
+
+    // Filter products
+    products = products.filter((product) => {
+      const matchesDescription = !description || product.description.toLowerCase().includes(description);
+      const matchesCategory = !category || product.category === category;
+      return matchesDescription && matchesCategory;
+    });
+
+    displayProductCards(products, 'searchResults');
+  });
+
+  // Index page search
+  $('#indexSearchBtn').click(function() {
+    const description = $('#indexSearchDescription').val().toLowerCase();
+    const category = $('#indexSearchCategory').val();
+
+    let products = getProductsFromStorage();
+
+    // Filter products
+    products = products.filter((product) => {
+      const matchesDescription = !description || product.description.toLowerCase().includes(description);
+      const matchesCategory = !category || product.category === category;
+      return matchesDescription && matchesCategory;
+    });
+
+    displayProductCards(products, 'indexSearchResults');
+  });
+
+  // Load all products on page load
+  if ($('#searchResults').length) {
+    const allProducts = getProductsFromStorage();
+    displayProductCards(allProducts, 'searchResults');
+  }
+  if ($('#indexSearchResults').length) {
+    const allProducts = getProductsFromStorage();
+    displayProductCards(allProducts, 'indexSearchResults');
+  }
 });
   
 
