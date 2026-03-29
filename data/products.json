@@ -1,0 +1,84 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "description": "Wireless Bluetooth Headphones",
+      "category": "electronics",
+      "unitOfMeasure": "piece",
+      "price": 79.99,
+      "weight": 0.25,
+      "image": "images/headphones.jpg",
+      "createdAt": "2026-03-20T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "description": "USB-C Fast Charging Cable",
+      "category": "electronics",
+      "unitOfMeasure": "piece",
+      "price": 14.99,
+      "weight": 0.05,
+      "image": "images/cable.jpg",
+      "createdAt": "2026-03-20T11:15:00Z"
+    },
+    {
+      "id": 3,
+      "description": "Premium Cotton T-Shirt",
+      "category": "clothing",
+      "unitOfMeasure": "piece",
+      "price": 24.99,
+      "weight": 0.2,
+      "image": "images/tshirt.jpg",
+      "createdAt": "2026-03-20T12:00:00Z"
+    },
+    {
+      "id": 4,
+      "description": "JavaScript Programming Book",
+      "category": "books",
+      "unitOfMeasure": "piece",
+      "price": 45.99,
+      "weight": 0.8,
+      "image": "images/book.jpg",
+      "createdAt": "2026-03-20T13:30:00Z"
+    },
+    {
+      "id": 5,
+      "description": "Stainless Steel Coffee Mug",
+      "category": "home",
+      "unitOfMeasure": "piece",
+      "price": 19.99,
+      "weight": 0.4,
+      "image": "images/mug.jpg",
+      "createdAt": "2026-03-20T14:00:00Z"
+    },
+    {
+      "id": 6,
+      "description": "Yoga Mat Premium",
+      "category": "sports",
+      "unitOfMeasure": "piece",
+      "price": 34.99,
+      "weight": 0.9,
+      "image": "images/yogamat.jpg",
+      "createdAt": "2026-03-20T15:00:00Z"
+    },
+    {
+      "id": 7,
+      "description": "Professional Desk Lamp",
+      "category": "home",
+      "unitOfMeasure": "piece",
+      "price": 49.99,
+      "weight": 0.6,
+      "image": "images/lamp.jpg",
+      "createdAt": "2026-03-20T16:00:00Z"
+    },
+    {
+      "id": 8,
+      "description": "Wireless Mouse 2.4GHz",
+      "category": "electronics",
+      "unitOfMeasure": "piece",
+      "price": 29.99,
+      "weight": 0.15,
+      "image": "images/mouse.jpg",
+      "createdAt": "2026-03-20T17:00:00Z"
+    }
+  ]
+}

@@ -1,20 +1,10 @@
-<!--
-03/29/2026
-L8: Group Work Tasks
-----------------
-Jacob: jQuery, AJAX
-Valerie: JS, JSON
-Jose: CSS, Bootstrap
-Adrian: HTML
--->
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website Home</title>
+    <title>Browse Products - ShopSmart</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -37,8 +27,8 @@ Adrian: HTML
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <a class="btn btn-outline-light btn-sm" href="signup.html">Sign Up / Login</a>
                 <a class="btn btn-outline-light btn-sm" href="productmanagement.html">Product Management</a>
+                <a class="btn btn-outline-light btn-sm" href="signup.html">Sign Up / Login</a>
             </div>
         </div>
     </header>
@@ -53,13 +43,16 @@ Adrian: HTML
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 justify-content-center">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                        <a class="nav-link" href="index.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#products">Products</a>
+                        <a class="nav-link" href="signup.html">Login</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="cart.html">Shopping Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="products.html">Products</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">About Us</a>
@@ -73,62 +66,53 @@ Adrian: HTML
     </nav>
 
     <!-- Main Content -->
-    <section class="welcome-msg mt-4">
-        <div class="container text-center">
-            <article>
-                <h1>Welcome to my website!</h1>
-                <p class="lead">Explore our products and services, create an account to get started.</p>
-            </article>
-        </div>
-    </section>
-
-    <!-- Advertisement -->
-    <aside class="advertisements mt-3 mb-5">
+    <section class="main-content mt-4 mb-5 flex-grow-1">
         <div class="container">
-            <img src="images/google-ad.png" alt="Generic Google Advertisement">
-        </div>
-    </aside>
+            <h1 class="text-center mb-4">Browse Our Products</h1>
 
-    <!-- Search Products Section -->
-    <section class="main-content mt-4 mb-5" id="products">
-        <div class="container">
-            <h2 class="text-center mb-4">Browse Our Products</h2>
-            <div class="row mb-4">
-                <div class="col-md-6 offset-md-3">
+            <!-- Search Section -->
+            <div class="row mb-5">
+                <div class="col-lg-8 offset-lg-2">
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title text-center mb-3">Search Products</h5>
-                            <form id="indexSearchForm" class="mb-3">
-                                <div class="mb-3">
-                                    <label for="indexSearchDescription" class="form-label">Description</label>
-                                    <input type="text" class="form-control" id="indexSearchDescription" placeholder="Search by description">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="indexSearchCategory" class="form-label">Category</label>
-                                    <select class="form-select" id="indexSearchCategory">
-                                        <option value="">All Categories</option>
-                                        <option value="electronics">Electronics</option>
-                                        <option value="clothing">Clothing</option>
-                                        <option value="books">Books</option>
-                                        <option value="home">Home & Garden</option>
-                                        <option value="sports">Sports & Outdoors</option>
-                                    </select>
+                            <form id="productsSearchForm" class="mb-3">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="productsSearchDescription" class="form-label">Description</label>
+                                        <input type="text" class="form-control" id="productsSearchDescription"
+                                            placeholder="Search by product name">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="productsSearchCategory" class="form-label">Category</label>
+                                        <select class="form-select" id="productsSearchCategory">
+                                            <option value="">All Categories</option>
+                                            <option value="electronics">Electronics</option>
+                                            <option value="clothing">Clothing</option>
+                                            <option value="books">Books</option>
+                                            <option value="home">Home & Garden</option>
+                                            <option value="sports">Sports & Outdoors</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="text-center">
-                                    <button type="button" class="btn btn-primary px-5" id="indexSearchBtn">Search</button>
-                                    <button type="button" class="btn btn-outline-secondary px-5 ms-2" id="indexResetBtn">Show All</button>
+                                    <button type="button" class="btn btn-primary px-5" id="productsSearchBtn">Search</button>
+                                    <button type="button" class="btn btn-outline-secondary px-5 ms-2" id="productsResetBtn">Show All</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Available Products Display -->
+
+            <!-- Available Products Section -->
             <div class="row">
                 <div class="col-12">
                     <h3 class="mb-4">Available Products</h3>
-                    <div id="indexSearchResults" class="row"></div>
+                    <div id="productsDisplay" class="row">
+                        <!-- Products will be loaded here by JavaScript -->
+                        <p class="col-12 text-center text-muted">Loading products...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -143,6 +127,7 @@ Adrian: HTML
         </div>
     </footer>
 
+    <script src="js/products.js"></script>
     <script src="js/main.js"></script>
 </body>
 

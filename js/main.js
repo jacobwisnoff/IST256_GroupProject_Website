@@ -348,6 +348,13 @@ function displayShopper(shopper) {
       triedSubmitProduct = false;
 
       alert('Product added successfully!');
+
+      // Automatically reload and display all products in the search results
+      if ($('#searchResults').length > 0) {
+        getAllProducts((allProducts) => {
+          displayProductCards(allProducts, 'searchResults');
+        });
+      }
     });
 
     // Input listeners for product form
@@ -367,42 +374,189 @@ function displayShopper(shopper) {
 
   // jQuery Search Functionality
   function getProductsFromStorage() {
-    const productsRaw = localStorage.getItem('products');
-    try {
-      return productsRaw ? JSON.parse(productsRaw) : [];
-    } catch {
-      return [];
+    // Load products from both JSON file and localStorage
+    let products = [];
+
+    // Synchronously load localStorage products (user-created)
+    const storedProducts = localStorage.getItem('products');
+    if (storedProducts) {
+      try {
+        products = JSON.parse(storedProducts);
+      } catch (e) {
+        console.error('Error parsing localStorage products');
+      }
     }
+
+    return products;
   }
+
+  function getAllProducts(callback) {
+    // Load products only from localStorage (user-created products)
+    let userProducts = [];
+    const storedProducts = localStorage.getItem('products');
+    if (storedProducts) {
+      try {
+        userProducts = JSON.parse(storedProducts);
+      } catch (e) {
+        console.error('Error parsing localStorage products:', e);
+      }
+    }
+    callback(userProducts);
+  }
+
+  // Store current products for cart operations
+  let currentProducts = [];
 
   function displayProductCards(products, containerId) {
     const $container = $('#' + containerId);
     $container.empty();
+
+    // Store products for cart operations
+    currentProducts = products;
 
     if (products.length === 0) {
       $container.html('<p class="col-12 text-center text-muted">No products found.</p>');
       return;
     }
 
+    // Check if this is the product management page or home page
+    const isProductManagementPage = containerId === 'searchResults';
+
     products.forEach((product) => {
+      let buttonSection = '';
+      
+      if (isProductManagementPage) {
+        // Product Management page: show delete button
+        buttonSection = `
+          <button type="button" class="btn btn-sm btn-danger w-100 remove-product-btn" 
+            data-product-id="${product.id}">Remove from List</button>
+        `;
+      } else {
+        // Home page: show add to cart button
+        buttonSection = `
+          <label for="qty-${product.id}" class="form-label small mb-2"><strong>Quantity</strong></label>
+          <input type="number" class="form-control form-control-sm mb-2 product-qty-input" 
+            id="qty-${product.id}" data-product-id="${product.id}" value="1" min="1" max="999">
+          <button type="button" class="btn btn-sm btn-primary w-100 add-to-cart-home-btn" 
+            data-product-id="${product.id}">Add to Cart</button>
+        `;
+      }
+
       const card = `
-        <div class="col-md-4 col-sm-6 mb-4">
-          <div class="card shadow-sm h-100">
-            <div class="card-body">
+        <div class="${isProductManagementPage ? 'col-lg-6 col-md-6 col-sm-12' : 'col-md-4 col-sm-6'} mb-4">
+          <div class="card product-card shadow-sm h-100">
+            <div class="card-body d-flex flex-column">
               <h5 class="card-title">${product.description}</h5>
-              <p class="card-text">
-                <strong>Category:</strong> ${product.category}<br>
-                <strong>Price:</strong> $${product.price.toFixed(2)}<br>
-                <strong>Unit:</strong> ${product.unitOfMeasure}
-                ${product.weight ? `<br><strong>Weight:</strong> ${product.weight} kg` : ''}
-              </p>
-              <small class="text-muted">Added: ${new Date(product.createdAt).toLocaleDateString()}</small>
+              <div class="product-details flex-grow-1">
+                <p class="card-text mb-2">
+                  <strong>Price:</strong> $${product.price.toFixed(2)}
+                </p>
+                <p class="card-text mb-2">
+                  <strong>Category:</strong> ${product.category}<br>
+                  <strong>Unit:</strong> ${product.unitOfMeasure}
+                </p>
+                ${product.weight ? `<p class="card-text mb-2"><strong>Weight:</strong> ${product.weight} kg</p>` : ''}
+                <small class="text-muted">Added: ${new Date(product.createdAt).toLocaleDateString()}</small>
+              </div>
+              <div class="mt-auto">
+                ${buttonSection}
+              </div>
             </div>
           </div>
         </div>
       `;
       $container.append(card);
     });
+
+    // Attach event listeners
+    if (isProductManagementPage) {
+      attachRemoveProductListeners();
+    } else {
+      attachAddToCartListeners(products);
+    }
+  }
+
+  function attachRemoveProductListeners() {
+    $('.remove-product-btn').off('click').on('click', function(e) {
+      const productId = parseInt($(this).data('product-id'));
+      removeProduct(productId);
+    });
+  }
+
+  function attachAddToCartListeners(products) {
+    $('.add-to-cart-home-btn').off('click').on('click', function(e) {
+      const productId = parseInt($(this).data('product-id'));
+      const quantity = parseInt($(this).closest('.card-body').find('.product-qty-input').val()) || 1;
+      addProductToCart(productId, quantity, products);
+    });
+
+    $('.product-qty-input').off('keypress').on('keypress', function(e) {
+      if (e.which === 13) {
+        e.preventDefault();
+        $(this).next('.add-to-cart-home-btn').click();
+      }
+    });
+  }
+
+  function removeProduct(productId) {
+    if (!confirm('Are you sure you want to remove this product?')) {
+      return;
+    }
+
+    // Get products from localStorage
+    let products = [];
+    const storedProducts = localStorage.getItem('products');
+    if (storedProducts) {
+      try {
+        products = JSON.parse(storedProducts);
+      } catch (e) {
+        console.error('Error parsing localStorage products:', e);
+        return;
+      }
+    }
+
+    // Remove the product
+    products = products.filter(product => product.id !== productId);
+
+    // Save updated products to localStorage
+    localStorage.setItem('products', JSON.stringify(products));
+    console.log(`Product ${productId} removed`);
+
+    // Refresh the display
+    const $container = $('#searchResults');
+    displayProductCards(products, 'searchResults');
+    alert('Product removed successfully!');
+  }
+
+  function addProductToCart(productId, quantity = 1, products = currentProducts) {
+    // Find product from the actual products list
+    const product = products.find(p => p.id === productId);
+    if (!product) {
+      console.error('Product not found:', productId);
+      alert('Product not found');
+      return;
+    }
+
+    // Get or create cart
+    let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
+
+    // Check if product already in cart
+    const cartItem = cart.find(item => item.id === productId);
+    if (cartItem) {
+      cartItem.quantity += quantity;
+      console.log(`Updated quantity for ${product.description}: ${cartItem.quantity}`);
+    } else {
+      cart.push({
+        ...product,
+        quantity: quantity,
+        addedAt: new Date().toISOString()
+      });
+      console.log(`Added ${product.description} to cart`);
+    }
+
+    // Save to localStorage
+    localStorage.setItem('shoppingCart', JSON.stringify(cart));
+    alert(`${quantity} x ${product.description} added to cart!`);
   }
 
   // Product Management page search
@@ -410,16 +564,28 @@ function displayShopper(shopper) {
     const description = $('#searchDescription').val().toLowerCase();
     const category = $('#searchCategory').val();
 
-    let products = getProductsFromStorage();
+    // Get both JSON and localStorage products
+    getAllProducts((allProducts) => {
+      let products = allProducts;
 
-    // Filter products
-    products = products.filter((product) => {
-      const matchesDescription = !description || product.description.toLowerCase().includes(description);
-      const matchesCategory = !category || product.category === category;
-      return matchesDescription && matchesCategory;
+      // Filter products
+      products = products.filter((product) => {
+        const matchesDescription = !description || product.description.toLowerCase().includes(description);
+        const matchesCategory = !category || product.category === category;
+        return matchesDescription && matchesCategory;
+      });
+
+      displayProductCards(products, 'searchResults');
     });
+  });
 
-    displayProductCards(products, 'searchResults');
+  // Product Management reset button
+  $('#resetSearchBtn').click(function() {
+    $('#searchDescription').val('');
+    $('#searchCategory').val('');
+    getAllProducts((allProducts) => {
+      displayProductCards(allProducts, 'searchResults');
+    });
   });
 
   // Index page search
@@ -427,26 +593,40 @@ function displayShopper(shopper) {
     const description = $('#indexSearchDescription').val().toLowerCase();
     const category = $('#indexSearchCategory').val();
 
-    let products = getProductsFromStorage();
+    // Get both JSON and localStorage products
+    getAllProducts((allProducts) => {
+      let products = allProducts;
 
-    // Filter products
-    products = products.filter((product) => {
-      const matchesDescription = !description || product.description.toLowerCase().includes(description);
-      const matchesCategory = !category || product.category === category;
-      return matchesDescription && matchesCategory;
+      // Filter products
+      products = products.filter((product) => {
+        const matchesDescription = !description || product.description.toLowerCase().includes(description);
+        const matchesCategory = !category || product.category === category;
+        return matchesDescription && matchesCategory;
+      });
+
+      displayProductCards(products, 'indexSearchResults');
     });
+  });
 
-    displayProductCards(products, 'indexSearchResults');
+  // Index page reset button
+  $('#indexResetBtn').click(function() {
+    $('#indexSearchDescription').val('');
+    $('#indexSearchCategory').val('');
+    getAllProducts((allProducts) => {
+      displayProductCards(allProducts, 'indexSearchResults');
+    });
   });
 
   // Load all products on page load
   if ($('#searchResults').length) {
-    const allProducts = getProductsFromStorage();
-    displayProductCards(allProducts, 'searchResults');
+    getAllProducts((allProducts) => {
+      displayProductCards(allProducts, 'searchResults');
+    });
   }
   if ($('#indexSearchResults').length) {
-    const allProducts = getProductsFromStorage();
-    displayProductCards(allProducts, 'indexSearchResults');
+    getAllProducts((allProducts) => {
+      displayProductCards(allProducts, 'indexSearchResults');
+    });
   }
 });
   

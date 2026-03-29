@@ -27,8 +27,8 @@
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <a class="btn btn-outline-light btn-sm" href="productmanagement.html">Product Management</a>
                 <a class="btn btn-outline-light btn-sm" href="signup.html">Sign Up / Login</a>
+                <a class="btn btn-outline-light btn-sm" href="productmanagement.html">Product Management</a>
             </div>
         </div>
     </header>
@@ -46,13 +46,10 @@
                         <a class="nav-link" href="index.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="signup.html">Login</a>
+                        <a class="nav-link" href="index.html#products">Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Shopping Cart</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="productmanagement.html">Products</a>
+                        <a class="nav-link" href="cart.html">Shopping Cart</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">About Us</a>
@@ -66,104 +63,96 @@
     </nav>
 
     <!-- Main Content -->
-    <section class="main-content mt-4">
-        <div class="container d-flex justify-content-center">
-            <div class="card shadow-sm" style="width:100%; max-width:520px;">
-                <div class="card-body">
-                    <h2 class="card-title text-center mb-3">Product Management</h2>
-                    <form id="productForm" novalidate>
-                        <div class="row mb-3">
-                            <label for="productDescription" class="col-sm-4 col-form-label">Product Description <span class="text-danger">*</span></label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="productDescription" placeholder="Enter Product Description" required>
-                                <div id="productDescriptionError" class="d-none text-danger small mt-1"></div>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="productCategory" class="col-sm-4 col-form-label">Product Category <span class="text-danger">*</span></label>
-                            <div class="col-sm-8">
-                                <select class="form-select" id="productCategory" required>
-                                    <option value="">Select Category</option>
-                                    <option value="electronics">Electronics</option>
-                                    <option value="clothing">Clothing</option>
-                                    <option value="books">Books</option>
-                                    <option value="home">Home & Garden</option>
-                                    <option value="sports">Sports & Outdoors</option>
-                                </select>
-                                <div id="productCategoryError" class="d-none text-danger small mt-1"></div>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="unitOfMeasure" class="col-sm-4 col-form-label">Unit of Measure <span class="text-danger">*</span></label>
-                            <div class="col-sm-8">
-                                <select class="form-select" id="unitOfMeasure" required>
-                                    <option value="">Select Unit</option>
-                                    <option value="pieces">Pieces</option>
-                                    <option value="kilograms">Kilograms</option>
-                                    <option value="liters">Liters</option>
-                                    <option value="meters">Meters</option>
-                                    <option value="boxes">Boxes</option>
-                                </select>
-                                <div id="unitOfMeasureError" class="d-none text-danger small mt-1"></div>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="productPrice" class="col-sm-4 col-form-label">Product Price <span class="text-danger">*</span></label>
-                            <div class="col-sm-8">
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" id="productPrice" step="0.01" min="0" placeholder="0.00" required>
+    <section class="main-content mt-4 mb-5">
+        <div class="container-fluid px-4">
+            <div class="row g-4">
+                <!-- Product Management Card -->
+                <div class="col-lg-5">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h2 class="card-title text-center mb-3">Add Product</h2>
+                            <form id="productForm" novalidate style="max-width: 300px; margin: 0 auto;">
+                                <div class="mb-3">
+                                    <label for="productDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="productDescription" placeholder="Enter Product Description" required>
+                                    <div id="productDescriptionError" class="d-none text-danger small mt-1"></div>
                                 </div>
-                                <div id="productPriceError" class="d-none text-danger small mt-1"></div>
-                            </div>
+                                <div class="mb-3">
+                                    <label for="productCategory" class="form-label">Category <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="productCategory" required>
+                                        <option value="">Select Category</option>
+                                        <option value="electronics">Electronics</option>
+                                        <option value="clothing">Clothing</option>
+                                        <option value="books">Books</option>
+                                        <option value="home">Home & Garden</option>
+                                        <option value="sports">Sports & Outdoors</option>
+                                    </select>
+                                    <div id="productCategoryError" class="d-none text-danger small mt-1"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="unitOfMeasure" class="form-label">Unit <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="unitOfMeasure" required>
+                                        <option value="">Select Unit</option>
+                                        <option value="pieces">Pieces</option>
+                                        <option value="kilograms">Kilograms</option>
+                                        <option value="liters">Liters</option>
+                                        <option value="meters">Meters</option>
+                                        <option value="boxes">Boxes</option>
+                                    </select>
+                                    <div id="unitOfMeasureError" class="d-none text-danger small mt-1"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="productPrice" class="form-label">Price <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="productPrice" step="0.01" min="0" placeholder="0.00" required>
+                                    </div>
+                                    <div id="productPriceError" class="d-none text-danger small mt-1"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="productWeight" class="form-label">Weight (optional)</label>
+                                    <input type="number" class="form-control" id="productWeight" step="0.01" min="0" placeholder="0.00">
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary px-5">Add Product</button>
+                                </div>
+                            </form>
+                            <div class="mt-4" id="productResult" aria-live="polite"></div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="productWeight" class="col-sm-4 col-form-label">Product Weight (optional)</label>
-                            <div class="col-sm-8">
-                                <input type="number" class="form-control" id="productWeight" step="0.01" min="0" placeholder="0.00">
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary px-5">Submit</button>
-                        </div>
-                    </form>
-                    <div class="mt-4" id="productResult" aria-live="polite"></div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Search Products Section -->
-    <section class="main-content mt-4">
-        <div class="container d-flex justify-content-center">
-            <div class="card shadow-sm" style="width:100%; max-width:520px;">
-                <div class="card-body">
-                    <h2 class="card-title text-center mb-3">Search Products</h2>
-                    <form id="searchForm" class="mb-4">
-                        <div class="row mb-3">
-                            <label for="searchDescription" class="col-sm-4 col-form-label">Description</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="searchDescription" placeholder="Search by description">
-                            </div>
+                <!-- Search Products Card -->
+                <div class="col-lg-7">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h2 class="card-title text-center mb-3">Search & Manage Products</h2>
+                            <form id="searchForm" class="mb-4">
+                                <div class="row mb-3">
+                                    <label for="searchDescription" class="col-sm-4 col-form-label">Description</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="searchDescription" placeholder="Search by description">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label for="searchCategory" class="col-sm-4 col-form-label">Category</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-select" id="searchCategory">
+                                            <option value="">All Categories</option>
+                                            <option value="electronics">Electronics</option>
+                                            <option value="clothing">Clothing</option>
+                                            <option value="books">Books</option>
+                                            <option value="home">Home & Garden</option>
+                                            <option value="sports">Sports & Outdoors</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary px-4" id="searchBtn">Search</button>
+                                <button type="button" class="btn btn-outline-secondary px-4 ms-2" id="resetSearchBtn">Show All</button>
+                            </form>
+                            <div id="searchResults" class="row g-3"></div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="searchCategory" class="col-sm-4 col-form-label">Category</label>
-                            <div class="col-sm-8">
-                                <select class="form-select" id="searchCategory">
-                                    <option value="">All Categories</option>
-                                    <option value="electronics">Electronics</option>
-                                    <option value="clothing">Clothing</option>
-                                    <option value="books">Books</option>
-                                    <option value="home">Home & Garden</option>
-                                    <option value="sports">Sports & Outdoors</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button type="button" class="btn btn-primary px-5" id="searchBtn">Search</button>
-                        </div>
-                    </form>
-                    <div id="searchResults" class="row"></div>
+                    </div>
                 </div>
             </div>
         </div>
