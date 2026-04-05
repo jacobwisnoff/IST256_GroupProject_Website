@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ShopSmart</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        .checkout-container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            background-color: #fff5f7;
+        }
+
+        .form-control.is-invalid:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .invalid-feedback {
+            display: block;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .button-group button,
+        .button-group a {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-submit {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background-color: #218838;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container {
+                margin: 15px;
+                padding: 20px;
+            }
+
+            .row-2col {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            div[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+
+<body ng-app="checkoutApp" ng-controller="CheckoutController">
+
+    <!-- Header -->
+    <header class="welcome-banner">
+        <div class="container d-flex align-items-center justify-content-between py-3">
+            <div class="brand d-flex align-items-center gap-3">
+                <img class="brand-logo" src="images/storelogo.jpg" alt="Store Logo" width="72" height="72">
+                <div>
+                    <h1 class="brand-title mb-0">ShopSmart</h1>
+                    <p class="brand-tagline mb-0">Curated deals, hassle-free shopping</p>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-light btn-sm" href="signup.html">Sign Up / Login</a>
+                <a class="btn btn-outline-light btn-sm" href="productmanagement.html">Product Management</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Nav Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#products">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cart.html">Shopping Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="checkout.html">Checkout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container" style="max-width: 1200px; padding: 30px 0;">
+            <h1 style="text-align: center; margin-bottom: 30px; color: #2c3e50;">Checkout</h1>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+
+                <!-- Left Column: Checkout Form -->
+                <div class="checkout-container" style="box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); max-width: 100%;">
+                    <form id="checkoutForm" name="checkoutForm" novalidate>
+
+                <!-- Shipping Destination Section -->
+                <div class="form-section">
+                    <h3>Shipping Destination</h3>
+
+                    <!-- Address -->
+                    <div class="mb-3">
+                        <label for="address" class="form-label required-field">Street Address</label>
+                        <input type="text" class="form-control" id="address" name="address" 
+                            ng-model="checkout.address" required
+                            ng-class="{'is-invalid': checkoutForm.address.$invalid && checkoutForm.address.$touched}"
+                            placeholder="Enter your street address">
+                        <div class="error-message" ng-show="checkoutForm.address.$error.required && checkoutForm.address.$touched">
+                            Street address is required
+                        </div>
+                    </div>
+
+                    <!-- City -->
+                    <div class="mb-3">
+                        <label for="city" class="form-label required-field">City</label>
+                        <input type="text" class="form-control" id="city" name="city" 
+                            ng-model="checkout.city" required
+                            ng-class="{'is-invalid': checkoutForm.city.$invalid && checkoutForm.city.$touched}"
+                            placeholder="Enter your city">
+                        <div class="error-message" ng-show="checkoutForm.city.$error.required && checkoutForm.city.$touched">
+                            City is required
+                        </div>
+                    </div>
+
+                    <!-- State and ZIP (2 columns) -->
+                    <div class="row-2col">
+                        <div>
+                            <label for="state" class="form-label required-field">State</label>
+                            <input type="text" class="form-control" id="state" name="state" 
+                                ng-model="checkout.state" required
+                                ng-class="{'is-invalid': checkoutForm.state.$invalid && checkoutForm.state.$touched}"
+                                placeholder="e.g., PA" maxlength="2">
+                            <div class="error-message" ng-show="checkoutForm.state.$error.required && checkoutForm.state.$touched">
+                                State is required
+                            </div>
+                        </div>
+                        <div>
+                            <label for="zip" class="form-label required-field">ZIP Code</label>
+                            <input type="text" class="form-control" id="zip" name="zip" 
+                                ng-model="checkout.zip" required
+                                ng-class="{'is-invalid': checkoutForm.zip.$invalid && checkoutForm.zip.$touched}"
+                                placeholder="e.g., 12345"
+                                pattern="\d{5}(?:-\d{4})?">
+                            <div class="error-message" ng-show="checkoutForm.zip.$error.required && checkoutForm.zip.$touched">
+                                ZIP code is required
+                            </div>
+                            <div class="error-message" ng-show="checkoutForm.zip.$error.pattern && checkoutForm.zip.$touched">
+                                ZIP code must be 5 digits (e.g., 12345)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Method Section -->
+                <div class="form-section">
+                    <h3>Shipping Method</h3>
+
+                    <!-- Carrier -->
+                    <div class="mb-3">
+                        <label for="carrier" class="form-label required-field">Carrier</label>
+                        <select class="form-control" id="carrier" name="carrier" 
+                            ng-model="checkout.carrier" required
+                            ng-class="{'is-invalid': checkoutForm.carrier.$invalid && checkoutForm.carrier.$touched}">
+                            <option value="">-- Select a Carrier --</option>
+                            <option value="FedEx">FedEx</option>
+                            <option value="UPS">UPS</option>
+                            <option value="DHL">DHL</option>
+                        </select>
+                        <div class="error-message" ng-show="checkoutForm.carrier.$error.required && checkoutForm.carrier.$touched">
+                            Carrier is required
+                        </div>
+                    </div>
+
+                    <!-- Shipping Method -->
+                    <div class="mb-3">
+                        <label for="method" class="form-label required-field">Delivery Method</label>
+                        <select class="form-control" id="method" name="method" 
+                            ng-model="checkout.method" required
+                            ng-class="{'is-invalid': checkoutForm.method.$invalid && checkoutForm.method.$touched}">
+                            <option value="">-- Select a Method --</option>
+                            <option value="Overnight">Overnight</option>
+                            <option value="2nd Day">2nd Day</option>
+                            <option value="Ground">Ground</option>
+                        </select>
+                        <div class="error-message" ng-show="checkoutForm.method.$error.required && checkoutForm.method.$touched">
+                            Delivery method is required
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="button-group">
+                    <button type="submit" class="btn-submit" ng-click="submitCheckout()">Complete Order</button>
+                    <a href="cart.html" class="btn-back">Return to Cart</a>
+                </div>
+            </form>
+                </div>
+
+                <!-- Right Column: Cart Summary -->
+                <div>
+                    <h3>Cart Summary</h3>
+                    <div class="card shadow-sm" style="border-radius: 8px;">
+                        <div class="card-body">
+                            
+                            <!-- Cart Items -->
+                            <div id="cartItemsDisplay" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+                                <div ng-repeat="item in checkoutData.items" style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <strong>{{ item.description }}</strong>
+                                        <span style="color: #28a745; font-weight: 600;">{{ (item.price * item.quantity) | currency }}</span>
+                                    </div>
+                                    <div style="font-size: 0.9rem; color: #666;">
+                                        Qty: {{ item.quantity }} × {{ item.price | currency }}
+                                    </div>
+                                </div>
+                                <p ng-if="!checkoutData.items || checkoutData.items.length === 0" class="text-muted text-center">No items in cart</p>
+                            </div>
+
+                            <hr>
+
+                            <!-- Cart Totals -->
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                                <span>Subtotal:</span>
+                                <span id="cartSubtotalCheckout">{{ checkoutData.subtotal | currency }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                                <span>Tax (8%):</span>
+                                <span id="cartTaxCheckout">{{ checkoutData.tax | currency }}</span>
+                            </div>
+
+                            <hr>
+
+                            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem; color: #28a745;">
+                                <span>Total:</span>
+                                <span id="cartTotalCheckout">{{ checkoutData.total | currency }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON Output Section -->
+            <div ng-show="orderSubmitted" style="margin-top: 30px;">
+                <div style="background-color: #e7f3ff; border: 2px solid #007bff; border-radius: 8px; padding: 20px;">
+                    <h3 style="color: #004085; margin-top: 0;">Order Details (JSON)</h3>
+                    <pre id="jsonContent" style="background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 15px; overflow-x: auto; color: #333;">{{ submittedCheckoutData | json }}</pre>
+                    <a href="cart.html" class="btn btn-primary" style="margin-top: 15px; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 6px; display: inline-block;">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2026 ShopSmart. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/checkout.js"></script>
+
+</body>
+
+</html>

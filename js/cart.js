@@ -234,7 +234,7 @@ class ShoppingCartManager {
     // Checkout function with AJAX
     checkout() {
         if (this.cart.length === 0) {
-            alert('Your cart is empty');
+            alert('Your cart is empty. Please add items before proceeding to checkout.');
             return;
         }
 
@@ -250,30 +250,12 @@ class ShoppingCartManager {
 
         console.log('Checkout data:', checkoutData);
 
-        // AJAX call to send order to server
-        $.ajax({
-            url: 'api/checkout',
-            type: 'POST',
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify(checkoutData),
-            success: (response) => {
-                console.log('Checkout successful:', response);
-                alert(`Order placed successfully!\nOrder ID: ${response.orderId || 'N/A'}\nTotal: $${total.toFixed(2)}`);
-                this.cart = [];
-                this.saveCart();
-                this.updateCartDisplay();
-            },
-            error: (xhr, status, error) => {
-                console.error('Checkout error:', error);
-                // Fallback: show order summary since API might not be available
-                const orderId = 'ORD-' + Date.now();
-                alert(`Order processed locally!\nOrder ID: ${orderId}\nTotal: $${total.toFixed(2)}\n\nNote: Integration with backend API available for production deployment.`);
-                this.cart = [];
-                this.saveCart();
-                this.updateCartDisplay();
-            }
-        });
+        // Save checkout data to localStorage before redirecting
+        localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+        sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+
+        // Redirect to checkout page
+        window.location.href = 'checkout.html';
     }
 
     // Utility: HTML escape to prevent XSS
