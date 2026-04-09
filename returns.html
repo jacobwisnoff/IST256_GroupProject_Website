@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returns - ShopSmart</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        .returns-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .search-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 1rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .btn-search {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 30px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-search:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-reset {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 30px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: 10px;
+        }
+
+        .btn-reset:hover {
+            background-color: #5a6268;
+        }
+
+        .purchase-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: box-shadow 0.3s;
+        }
+
+        .purchase-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .purchase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .purchase-id {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .purchase-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .purchase-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-delivered {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-returned {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .purchase-details {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+
+        .purchase-details p {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .purchase-amount {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #28a745;
+            margin-top: 10px;
+        }
+
+        .return-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-return {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-return:hover {
+            background-color: #c82333;
+        }
+
+        .btn-return:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .return-form {
+            background: white;
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .return-form.active {
+            display: block;
+        }
+
+        .return-form h4 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            background-color: #fff5f7;
+        }
+
+        .form-control.is-invalid:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .invalid-feedback {
+            display: block;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .form-group-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .return-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-submit {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #218838;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .form-group-row {
+                grid-template-columns: 1fr;
+            }
+
+            .purchase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .return-options,
+            .return-actions {
+                flex-direction: column;
+            }
+
+            .btn-reset {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body ng-app="returnsApp" ng-controller="ReturnsController">
+
+    <!-- Header -->
+    <header class="welcome-banner">
+        <div class="container d-flex align-items-center justify-content-between py-3">
+            <div class="brand d-flex align-items-center gap-3">
+                <img class="brand-logo" src="images/storelogo.jpg" alt="Store Logo" width="72" height="72">
+                <div>
+                    <h1 class="brand-title mb-0">ShopSmart</h1>
+                    <p class="brand-tagline mb-0">Curated deals, hassle-free shopping</p>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-light btn-sm" href="signup.html">Sign Up / Login</a>
+                <a class="btn btn-outline-light btn-sm" href="productmanagement.html">Product Management</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Nav Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#products">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cart.html">Shopping Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="checkout.html">Checkout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="returns.html">Returns</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="returns-container">
+            <h1 style="text-align: center; margin-bottom: 10px; color: #2c3e50;">Returns & Refunds</h1>
+            <p style="text-align: center; color: #666; margin-bottom: 30px;">Search for your purchases and initiate a return if needed</p>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage" ng-show="returnSubmitted">
+                <strong>Success!</strong> Your return request has been submitted. We will process it within 5-7 business days.
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-card">
+                <h3>Search Your Purchases</h3>
+                <form id="returnsSearchForm" name="returnsSearchForm" novalidate>
+                    <div class="mb-3">
+                        <label for="searchOrderId" class="form-label">Order ID or Item Name</label>
+                        <input type="text" class="form-control" id="searchOrderId" name="searchOrderId"
+                            ng-model="searchQuery" placeholder="Enter order ID or product name">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="searchStatus" class="form-label">Status</label>
+                            <select class="form-select" id="searchStatus" ng-model="searchStatus">
+                                <option value="">All Orders</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Returned">Returned</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="searchCategory" class="form-label">Category</label>
+                            <select class="form-select" id="searchCategory" ng-model="searchCategory">
+                                <option value="">All Categories</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Books">Books</option>
+                                <option value="Home">Home & Garden</option>
+                                <option value="Sports">Sports & Outdoors</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button type="button" class="btn-search" ng-click="searchPurchases()">Search</button>
+                        <button type="button" class="btn-reset" ng-click="resetSearch()">Clear Filters</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Purchase Results -->
+            <div>
+                <h3 style="margin-bottom: 20px; color: #2c3e50;">
+                    {{ filteredPurchases.length }} Purchase(s) Found
+                </h3>
+
+                <!-- Empty State -->
+                <div class="empty-state" ng-if="filteredPurchases.length === 0">
+                    <h3>No purchases found</h3>
+                    <p>Try adjusting your search filters or check back after making a purchase.</p>
+                </div>
+
+                <!-- Purchase Items -->
+                <div ng-repeat="purchase in filteredPurchases" class="purchase-item">
+                    <div class="purchase-header">
+                        <div>
+                            <div class="purchase-id">Order #{{ purchase.orderId }}</div>
+                            <div class="purchase-date">{{ purchase.date | date:'MMM dd, yyyy' }}</div>
+                        </div>
+                        <div class="purchase-status" ng-class="'status-' + purchase.status.toLowerCase().replace(/\s/g, '-')">
+                            {{ purchase.status }}
+                        </div>
+                    </div>
+
+                    <div class="purchase-details">
+                        <p><strong>Item:</strong> {{ purchase.itemName }}</p>
+                        <p><strong>Category:</strong> {{ purchase.category }}</p>
+                        <p><strong>Quantity:</strong> {{ purchase.quantity }}</p>
+                        <p class="purchase-amount">{{ purchase.amount | currency }}</p>
+                    </div>
+
+                    <div class="return-options">
+                        <button type="button" class="btn-return"
+                            ng-disabled="purchase.status !== 'Delivered' || purchase.canReturn === false"
+                            ng-click="initializeReturnForm(purchase)"
+                            title="You can only return items that have been delivered">
+                            {{ purchase.status === 'Returned' ? 'Already Returned' : 'Request Return' }}
+                        </button>
+                    </div>
+
+                    <!-- Return Form -->
+                    <div class="return-form" ng-class="{active: selectedPurchaseId === purchase.orderId}">
+                        <h4>Return Request for Order #{{ purchase.orderId }}</h4>
+                        <form id="returnForm" name="returnForm" novalidate>
+                            <div class="mb-3">
+                                <label for="returnReason" class="form-label required-field">Reason for Return</label>
+                                <select class="form-control" id="returnReason" name="returnReason"
+                                    ng-model="returnData.reason" required
+                                    ng-class="{'is-invalid': returnForm.returnReason.$invalid && returnForm.returnReason.$touched}">
+                                    <option value="">-- Select a reason --</option>
+                                    <option value="Defective">Defective/Not Working</option>
+                                    <option value="Wrong Item">Wrong Item Received</option>
+                                    <option value="Not as Described">Not as Described</option>
+                                    <option value="Better Price">Found Better Price</option>
+                                    <option value="Changed Mind">Changed My Mind</option>
+                                    <option value="Damaged">Damaged During Shipping</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <div class="invalid-feedback" ng-show="returnForm.returnReason.$error.required && returnForm.returnReason.$touched">
+                                    Please select a reason for return
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="returnDescription" class="form-label required-field">Description</label>
+                                <textarea class="form-control" id="returnDescription" name="returnDescription"
+                                    ng-model="returnData.description" required
+                                    ng-class="{'is-invalid': returnForm.returnDescription.$invalid && returnForm.returnDescription.$touched}"
+                                    placeholder="Please describe the issue or reason for return (minimum 10 characters)"
+                                    rows="4"
+                                    minlength="10"
+                                    maxlength="500"></textarea>
+                                <div class="invalid-feedback" ng-show="returnForm.returnDescription.$error.required && returnForm.returnDescription.$touched">
+                                    Description is required
+                                </div>
+                                <div class="invalid-feedback" ng-show="returnForm.returnDescription.$error.minlength && returnForm.returnDescription.$touched">
+                                    Description must be at least 10 characters
+                                </div>
+                                <small class="text-muted d-block mt-2">{{ returnData.description.length || 0 }}/500 characters</small>
+                            </div>
+
+                            <div class="form-group-row">
+                                <div>
+                                    <label for="returnCondition" class="form-label required-field">Condition</label>
+                                    <select class="form-control" id="returnCondition" name="returnCondition"
+                                        ng-model="returnData.condition" required
+                                        ng-class="{'is-invalid': returnForm.returnCondition.$invalid && returnForm.returnCondition.$touched}">
+                                        <option value="">-- Select condition --</option>
+                                        <option value="Unused">Unused/Original Packaging</option>
+                                        <option value="Lightly Used">Lightly Used</option>
+                                        <option value="Used">Used</option>
+                                        <option value="Damaged">Damaged</option>
+                                    </select>
+                                    <div class="invalid-feedback" ng-show="returnForm.returnCondition.$error.required && returnForm.returnCondition.$touched">
+                                        Please select condition
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="shippingMethod" class="form-label required-field">Return Shipping Method</label>
+                                    <select class="form-control" id="shippingMethod" name="shippingMethod"
+                                        ng-model="returnData.shippingMethod" required
+                                        ng-class="{'is-invalid': returnForm.shippingMethod.$invalid && returnForm.shippingMethod.$touched}">
+                                        <option value="">-- Select method --</option>
+                                        <option value="Ground">Ground Shipping</option>
+                                        <option value="Expedited">Expedited (extra cost)</option>
+                                        <option value="Store Pickup">In-Store Pickup</option>
+                                    </select>
+                                    <div class="invalid-feedback" ng-show="returnForm.shippingMethod.$error.required && returnForm.shippingMethod.$touched">
+                                        Please select a shipping method
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 mt-3">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="agreeTerms" name="agreeTerms"
+                                        ng-model="returnData.agreeTerms" required
+                                        ng-class="{'is-invalid': returnForm.agreeTerms.$invalid && returnForm.agreeTerms.$touched}">
+                                    <span class="required-field">I agree to the return policy</span>
+                                </label>
+                                <div class="invalid-feedback" ng-show="returnForm.agreeTerms.$error.required && returnForm.agreeTerms.$touched">
+                                    You must agree to the return policy
+                                </div>
+                            </div>
+
+                            <div class="return-actions">
+                                <button type="button" class="btn-submit" ng-click="submitReturn(purchase)"
+                                    ng-disabled="returnForm.$invalid">
+                                    Submit Return Request
+                                </button>
+                                <button type="button" class="btn-cancel" ng-click="cancelReturnForm()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2026 ShopSmart. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/returns.js"></script>
+
+</body>
+
+</html>

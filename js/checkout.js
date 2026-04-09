@@ -9,7 +9,17 @@ angular.module('checkoutApp', [])
             state: '',
             zip: '',
             carrier: '',
-            method: ''
+            method: '',
+            billingName: '',
+            billingAddress: '',
+            billingCity: '',
+            billingState: '',
+            billingZip: '',
+            phone: '',
+            email: '',
+            cardNumber: '',
+            expiryDate: '',
+            cvv: ''
         };
 
         // Cart data from localStorage
@@ -82,7 +92,7 @@ angular.module('checkoutApp', [])
             }
 
             // Check each required field
-            const requiredFields = ['address', 'city', 'state', 'zip', 'carrier', 'method'];
+            const requiredFields = ['address', 'city', 'state', 'zip', 'carrier', 'method', 'billingName', 'billingAddress', 'billingCity', 'billingState', 'billingZip', 'phone', 'email', 'cardNumber', 'expiryDate', 'cvv'];
             let hasErrors = false;
             requiredFields.forEach(field => {
                 if (!$scope.checkout[field] || $scope.checkout[field].trim() === '') {
@@ -109,6 +119,20 @@ angular.module('checkoutApp', [])
                     zip: $scope.checkout.zip,
                     carrier: $scope.checkout.carrier,
                     method: $scope.checkout.method
+                },
+                billing: {
+                    name: $scope.checkout.billingName,
+                    address: $scope.checkout.billingAddress,
+                    city: $scope.checkout.billingCity,
+                    state: $scope.checkout.billingState.toUpperCase(),
+                    zip: $scope.checkout.billingZip,
+                    phone: $scope.checkout.phone,
+                    email: $scope.checkout.email
+                },
+                payment: {
+                    cardNumber: $scope.checkout.cardNumber.replace(/\s/g, ''),
+                    expiryDate: $scope.checkout.expiryDate,
+                    cvv: $scope.checkout.cvv
                 },
                 items: $scope.checkoutData.items,
                 subtotal: $scope.checkoutData.subtotal,

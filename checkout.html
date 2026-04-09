@@ -194,6 +194,9 @@
                         <a class="nav-link active" aria-current="page" href="checkout.html">Checkout</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="returns.html">Returns</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#">About Us</a>
                     </li>
                     <li class="nav-item">
@@ -305,6 +308,163 @@
                         </select>
                         <div class="error-message" ng-show="checkoutForm.method.$error.required && checkoutForm.method.$touched">
                             Delivery method is required
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing Details Section -->
+                <div class="form-section">
+                    <h3>Billing Details</h3>
+
+                    <!-- Full Name -->
+                    <div class="mb-3">
+                        <label for="billingName" class="form-label required-field">Full Name</label>
+                        <input type="text" class="form-control" id="billingName" name="billingName" 
+                            ng-model="checkout.billingName" required
+                            ng-class="{'is-invalid': checkoutForm.billingName.$invalid && checkoutForm.billingName.$touched}"
+                            placeholder="Enter your full name"
+                            pattern="[a-zA-Z\s]{2,}">
+                        <div class="error-message" ng-show="checkoutForm.billingName.$error.required && checkoutForm.billingName.$touched">
+                            Full name is required
+                        </div>
+                        <div class="error-message" ng-show="checkoutForm.billingName.$error.pattern && checkoutForm.billingName.$touched">
+                            Name must contain only letters and spaces (minimum 2 characters)
+                        </div>
+                    </div>
+
+                    <!-- Billing Address -->
+                    <div class="mb-3">
+                        <label for="billingAddress" class="form-label required-field">Street Address</label>
+                        <input type="text" class="form-control" id="billingAddress" name="billingAddress" 
+                            ng-model="checkout.billingAddress" required
+                            ng-class="{'is-invalid': checkoutForm.billingAddress.$invalid && checkoutForm.billingAddress.$touched}"
+                            placeholder="Enter your billing address">
+                        <div class="error-message" ng-show="checkoutForm.billingAddress.$error.required && checkoutForm.billingAddress.$touched">
+                            Billing address is required
+                        </div>
+                    </div>
+
+                    <!-- Billing City and State (2 columns) -->
+                    <div class="row-2col">
+                        <div>
+                            <label for="billingCity" class="form-label required-field">City</label>
+                            <input type="text" class="form-control" id="billingCity" name="billingCity" 
+                                ng-model="checkout.billingCity" required
+                                ng-class="{'is-invalid': checkoutForm.billingCity.$invalid && checkoutForm.billingCity.$touched}"
+                                placeholder="Enter your city">
+                            <div class="error-message" ng-show="checkoutForm.billingCity.$error.required && checkoutForm.billingCity.$touched">
+                                City is required
+                            </div>
+                        </div>
+                        <div>
+                            <label for="billingState" class="form-label required-field">State</label>
+                            <input type="text" class="form-control" id="billingState" name="billingState" 
+                                ng-model="checkout.billingState" required
+                                ng-class="{'is-invalid': checkoutForm.billingState.$invalid && checkoutForm.billingState.$touched}"
+                                placeholder="e.g., PA" maxlength="2">
+                            <div class="error-message" ng-show="checkoutForm.billingState.$error.required && checkoutForm.billingState.$touched">
+                                State is required
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing ZIP Code -->
+                    <div class="mb-3">
+                        <label for="billingZip" class="form-label required-field">ZIP Code</label>
+                        <input type="text" class="form-control" id="billingZip" name="billingZip" 
+                            ng-model="checkout.billingZip" required
+                            ng-class="{'is-invalid': checkoutForm.billingZip.$invalid && checkoutForm.billingZip.$touched}"
+                            placeholder="e.g., 12345"
+                            pattern="\d{5}(?:-\d{4})?">
+                        <div class="error-message" ng-show="checkoutForm.billingZip.$error.required && checkoutForm.billingZip.$touched">
+                            ZIP code is required
+                        </div>
+                        <div class="error-message" ng-show="checkoutForm.billingZip.$error.pattern && checkoutForm.billingZip.$touched">
+                            ZIP code must be 5 digits (e.g., 12345)
+                        </div>
+                    </div>
+
+                    <!-- Phone and Email (2 columns) -->
+                    <div class="row-2col">
+                        <div>
+                            <label for="phone" class="form-label required-field">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" 
+                                ng-model="checkout.phone" required
+                                ng-class="{'is-invalid': checkoutForm.phone.$invalid && checkoutForm.phone.$touched}"
+                                placeholder="(123) 456-7890"
+                                pattern="\(\d{3}\)\s?\d{3}-\d{4}">
+                            <div class="error-message" ng-show="checkoutForm.phone.$error.required && checkoutForm.phone.$touched">
+                                Phone number is required
+                            </div>
+                            <div class="error-message" ng-show="checkoutForm.phone.$error.pattern && checkoutForm.phone.$touched">
+                                Phone must be in format: (123) 456-7890
+                            </div>
+                        </div>
+                        <div>
+                            <label for="email" class="form-label required-field">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                ng-model="checkout.email" required
+                                ng-class="{'is-invalid': checkoutForm.email.$invalid && checkoutForm.email.$touched}"
+                                placeholder="your@email.com">
+                            <div class="error-message" ng-show="checkoutForm.email.$error.required && checkoutForm.email.$touched">
+                                Email is required
+                            </div>
+                            <div class="error-message" ng-show="checkoutForm.email.$error.email && checkoutForm.email.$touched">
+                                Please enter a valid email address
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Details Section -->
+                    <hr style="margin: 20px 0;">
+
+                    <!-- Card Number -->
+                    <div class="mb-3">
+                        <label for="cardNumber" class="form-label required-field">Card Number</label>
+                        <input type="text" class="form-control" id="cardNumber" name="cardNumber" 
+                            ng-model="checkout.cardNumber" required
+                            ng-class="{'is-invalid': checkoutForm.cardNumber.$invalid && checkoutForm.cardNumber.$touched}"
+                            placeholder="1234 5678 9012 3456"
+                            pattern="\d{4}\s?\d{4}\s?\d{4}\s?\d{4}"
+                            maxlength="19">
+                        <div class="error-message" ng-show="checkoutForm.cardNumber.$error.required && checkoutForm.cardNumber.$touched">
+                            Card number is required
+                        </div>
+                        <div class="error-message" ng-show="checkoutForm.cardNumber.$error.pattern && checkoutForm.cardNumber.$touched">
+                            Card number must be 16 digits (format: 1234 5678 9012 3456)
+                        </div>
+                    </div>
+
+                    <!-- Expiry Date and CVV (2 columns) -->
+                    <div class="row-2col">
+                        <div>
+                            <label for="expiryDate" class="form-label required-field">Expiry Date</label>
+                            <input type="text" class="form-control" id="expiryDate" name="expiryDate" 
+                                ng-model="checkout.expiryDate" required
+                                ng-class="{'is-invalid': checkoutForm.expiryDate.$invalid && checkoutForm.expiryDate.$touched}"
+                                placeholder="MM/YY"
+                                pattern="(0[1-9]|1[0-2])/\d{2}">
+                            <div class="error-message" ng-show="checkoutForm.expiryDate.$error.required && checkoutForm.expiryDate.$touched">
+                                Expiry date is required
+                            </div>
+                            <div class="error-message" ng-show="checkoutForm.expiryDate.$error.pattern && checkoutForm.expiryDate.$touched">
+                                Expiry date must be in MM/YY format
+                            </div>
+                        </div>
+                        <div>
+                            <label for="cvv" class="form-label required-field">CVV</label>
+                            <input type="text" class="form-control" id="cvv" name="cvv" 
+                                ng-model="checkout.cvv" required
+                                ng-class="{'is-invalid': checkoutForm.cvv.$invalid && checkoutForm.cvv.$touched}"
+                                placeholder="123"
+                                pattern="\d{3,4}"
+                                maxlength="4">
+                            <div class="error-message" ng-show="checkoutForm.cvv.$error.required && checkoutForm.cvv.$touched">
+                                CVV is required
+                            </div>
+                            <div class="error-message" ng-show="checkoutForm.cvv.$error.pattern && checkoutForm.cvv.$touched">
+                                CVV must be 3-4 digits
+                            </div>
                         </div>
                     </div>
                 </div>
