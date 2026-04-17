@@ -2,59 +2,41 @@
 class ProductsCatalogManager {
     constructor() {
         this.products = [];
+        this.apiBaseUrl = 'http://localhost:3001/api/products'; // backend endpointD
         this.init();
     }
 
     // Initialize products manager and load products
     init() {
-        this.loadProductsFromJSON();
+        this.loadProductsFromAPI();
         this.setupEventListeners();
     }
 
-    // Load products from JSON file using AJAX
-    loadProductsFromJSON() {
+    // Load products from backend API
+    loadProductsFromAPI() {
         $.ajax({
-            url: 'data/products.json',
+            url: this.apiBaseUrl,
             type: 'GET',
             dataType: 'json',
             success: (data) => {
-                this.products = data.products;
-                console.log('Products loaded from JSON:', this.products);
+                // Adjust depending on backend response shape
+                this.products = Array.isArray(data) ? data : data.products;
+
+                console.log('Products loaded from API:', this.products);
                 this.displayAllProducts();
             },
             error: (xhr, status, error) => {
                 console.error('Error loading products:', error);
-                this.loadProductsFromLocalStorage();
+                this.displayError();
             }
         });
     }
 
-    // Fallback: Load products from localStorage if JSON fails
-    loadProductsFromLocalStorage() {
-        const storedProducts = localStorage.getItem('products');
-        if (storedProducts) {
-            try {
-                this.products = JSON.parse(storedProducts);
-                console.log('Products loaded from localStorage');
-                this.displayAllProducts();
-            } catch (error) {
-                console.error('Error parsing localStorage products:', error);
-                this.displayError();
-            }
-        } else {
-            this.displayError();
-        }
-    }
-
     // Setup event listeners for search and actions
     setupEventListeners() {
-        // Search button
         $('#productsSearchBtn').click(() => this.searchProducts());
-
-        // Reset/Show All button
         $('#productsResetBtn').click(() => this.displayAllProducts());
 
-        // Enter key on search form
         $('#productsSearchForm').on('keypress', (e) => {
             if (e.which === 13) {
                 e.preventDefault();
@@ -70,14 +52,12 @@ class ProductsCatalogManager {
 
         let results = this.products;
 
-        // Filter by description
         if (searchDescription) {
             results = results.filter(product =>
                 product.description.toLowerCase().includes(searchDescription)
             );
         }
 
-        // Filter by category
         if (searchCategory) {
             results = results.filter(product =>
                 product.category === searchCategory
@@ -89,7 +69,6 @@ class ProductsCatalogManager {
 
     // Display all products
     displayAllProducts() {
-        // Clear search fields
         $('#productsSearchDescription').val('');
         $('#productsSearchCategory').val('');
         this.displayProductCards(this.products);
@@ -113,7 +92,7 @@ class ProductsCatalogManager {
                             <h5 class="card-title">${this.escapeHtml(product.description)}</h5>
                             <div class="product-details flex-grow-1">
                                 <p class="card-text mb-2">
-                                    <strong>Price:</strong> $${product.price.toFixed(2)}
+                                    <strong>Price:</strong> $${Number(product.price).toFixed(2)}
                                 </p>
                                 <p class="card-text mb-2">
                                     <strong>Category:</strong> ${this.escapeHtml(product.category)}
@@ -122,7 +101,7 @@ class ProductsCatalogManager {
                                     <strong>Unit:</strong> ${this.escapeHtml(product.unitOfMeasure)}
                                 </p>
                                 ${product.weight ? `<p class="card-text mb-2"><strong>Weight:</strong> ${product.weight} kg</p>` : ''}
-                                <small class="text-muted">ID: ${product.id}</small>
+                                <small class="text-muted">ID: ${product.id || product._id}</small>
                             </div>
                             <div class="mt-auto">
                                 <a href="cart.html" class="btn btn-sm btn-primary w-100">View in Cart</a>
@@ -138,11 +117,12 @@ class ProductsCatalogManager {
     // Display error message
     displayError() {
         const $container = $('#productsDisplay');
-        $container.html('<p class="col-12 text-center text-danger">Error loading products. Please try again later.</p>');
+        $container.html('<p class="col-12 text-center text-danger">Error loading products from server. Please try again later.</p>');
     }
 
     // Utility: HTML escape to prevent XSS
     escapeHtml(text) {
+        if (!text) return '';
         const map = {
             '&': '&amp;',
             '<': '&lt;',
@@ -150,7 +130,7 @@ class ProductsCatalogManager {
             '"': '&quot;',
             "'": '&#039;'
         };
-        return text.replace(/[&<>"']/g, m => map[m]);
+        return text.toString().replace(/[&<>"']/g, m => map[m]);
     }
 }
 
