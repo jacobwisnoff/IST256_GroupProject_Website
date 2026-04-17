@@ -2,7 +2,7 @@
 class ProductsCatalogManager {
     constructor() {
         this.products = [];
-        this.apiBaseUrl = 'http://localhost:3001/api/products'; // backend endpointD
+        this.apiBaseUrl = 'https://ist256.up.ist.psu.edu:3001/api/products'; // backend endpointD
         this.init();
     }
 
