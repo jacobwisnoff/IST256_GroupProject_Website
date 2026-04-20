@@ -518,8 +518,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadProductsFromApi()
       .done((apiProducts) => {
-        const mergedProducts = mergeProducts(apiProducts || [], userProducts);
-        callback(mergedProducts);
+        const cleanApiProducts = sanitizeProductList(apiProducts || []);
+        // API is source of truth when available; overwrite stale local cache.
+        localStorage.setItem('products', JSON.stringify(cleanApiProducts, null, 2));
+        callback(cleanApiProducts);
       })
       .fail((xhr, status, error) => {
         console.warn('Failed to load products from API, using localStorage only:', error);
