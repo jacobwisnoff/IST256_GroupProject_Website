@@ -466,7 +466,7 @@
                     </div>
 
                     <!-- Return Form -->
-                    <div class="return-form" ng-class="{active: selectedPurchaseId === purchase.orderId}">
+                    <div class="return-form active" ng-if="selectedPurchaseId === purchase.returnKey">
                         <h4>Return Request for Order #{{ purchase.orderId }}</h4>
                         <form id="returnForm" name="returnForm" novalidate>
                             <div class="mb-3">
@@ -553,7 +553,7 @@
 
                             <div class="return-actions">
                                 <button type="button" class="btn-submit" ng-click="submitReturn(purchase)"
-                                    ng-disabled="returnForm.$invalid">
+                                    >
                                     Submit Return Request
                                 </button>
                                 <button type="button" class="btn-cancel" ng-click="cancelReturnForm()">

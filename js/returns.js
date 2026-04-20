@@ -59,7 +59,9 @@ angular.module('returnsApp', [])
 
                 (order.items || []).forEach(function(item, index) {
                     const itemId = item.id !== undefined && item.id !== null ? item.id : index;
+                    const returnKey = `${orderDbId}-${itemId}-${index}`;
                     purchases.push({
+                        returnKey: returnKey,
                         orderDbId: orderDbId,
                         itemId: itemId,
                         orderId: orderId,
@@ -138,7 +140,7 @@ angular.module('returnsApp', [])
             }
 
             // Reset form and set selected purchase
-            $scope.selectedPurchaseId = purchase.orderId;
+            $scope.selectedPurchaseId = purchase.returnKey;
             $scope.returnData = {
                 orderDbId: purchase.orderDbId,
                 itemId: purchase.itemId,
