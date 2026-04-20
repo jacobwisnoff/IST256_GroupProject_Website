@@ -25,16 +25,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function normalizeProduct(product, index = 0) {
+    if (!product || typeof product !== 'object') {
+      return null;
+    }
+
+    const description = typeof product.description === 'string' ? product.description.trim() : '';
+    const category = typeof product.category === 'string' ? product.category.trim() : '';
+    const unitOfMeasure = typeof product.unitOfMeasure === 'string' ? product.unitOfMeasure.trim() : '';
+    const price = Number(product.price);
+
+    if (!description || !category || !unitOfMeasure || Number.isNaN(price) || price <= 0) {
+      return null;
+    }
+
+    const normalizedId = product.id !== undefined && product.id !== null
+      ? product.id
+      : `auto-${Date.now()}-${index}`;
+
+    return {
+      id: normalizedId,
+      description,
+      category,
+      unitOfMeasure,
+      price,
+      weight: product.weight !== undefined && product.weight !== null && product.weight !== ''
+        ? Number(product.weight)
+        : null,
+      createdAt: product.createdAt || new Date().toISOString()
+    };
+  }
+
+  function sanitizeProductList(products = []) {
+    if (!Array.isArray(products)) {
+      return [];
+    }
+
+    return products
+      .map((product, index) => normalizeProduct(product, index))
+      .filter((product) => product !== null);
+  }
+
   function mergeProducts(serverProducts = [], localProducts = []) {
     const mergedMap = new Map();
 
-    serverProducts.forEach((product) => {
+    const cleanServerProducts = sanitizeProductList(serverProducts);
+    const cleanLocalProducts = sanitizeProductList(localProducts);
+
+    cleanServerProducts.forEach((product) => {
       if (product && product.id !== undefined && product.id !== null) {
         mergedMap.set(String(product.id), product);
       }
     });
 
-    localProducts.forEach((product) => {
+    cleanLocalProducts.forEach((product) => {
       if (product && product.id !== undefined && product.id !== null) {
         mergedMap.set(String(product.id), product);
       }
@@ -443,7 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    return products;
+    return sanitizeProductList(products);
   }
 
   function getAllProducts(callback) {
@@ -456,6 +500,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Error parsing localStorage products:', e);
       }
     }
+
+    userProducts = sanitizeProductList(userProducts);
+    localStorage.setItem('products', JSON.stringify(userProducts, null, 2));
 
     loadProductsFromApi()
       .done((apiProducts) => {
@@ -475,10 +522,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const $container = $('#' + containerId);
     $container.empty();
 
-    // Store products for cart operations
-    currentProducts = products;
+    const cleanProducts = sanitizeProductList(products);
 
-    if (products.length === 0) {
+    // Store products for cart operations
+    currentProducts = cleanProducts;
+
+    if (cleanProducts.length === 0) {
       $container.html('<p class="col-12 text-center text-muted">No products found.</p>');
       return;
     }
@@ -486,7 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if this is the product management page or home page
     const isProductManagementPage = containerId === 'searchResults';
 
-    products.forEach((product) => {
+    cleanProducts.forEach((product) => {
       let buttonSection = '';
       
       if (isProductManagementPage) {

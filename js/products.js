@@ -6,6 +6,41 @@ class ProductsCatalogManager {
         this.init();
     }
 
+    normalizeProduct(product, index = 0) {
+        if (!product || typeof product !== 'object') {
+            return null;
+        }
+
+        const description = typeof product.description === 'string' ? product.description.trim() : '';
+        const category = typeof product.category === 'string' ? product.category.trim() : '';
+        const unitOfMeasure = typeof product.unitOfMeasure === 'string' ? product.unitOfMeasure.trim() : '';
+        const price = Number(product.price);
+
+        if (!description || !category || !unitOfMeasure || Number.isNaN(price) || price <= 0) {
+            return null;
+        }
+
+        return {
+            id: product.id !== undefined && product.id !== null ? product.id : `auto-${Date.now()}-${index}`,
+            description,
+            category,
+            unitOfMeasure,
+            price,
+            weight: product.weight !== undefined && product.weight !== null && product.weight !== '' ? Number(product.weight) : null,
+            createdAt: product.createdAt || new Date().toISOString()
+        };
+    }
+
+    sanitizeProductList(products = []) {
+        if (!Array.isArray(products)) {
+            return [];
+        }
+
+        return products
+            .map((product, index) => this.normalizeProduct(product, index))
+            .filter((product) => product !== null);
+    }
+
     getApiUrl(path) {
         return `${this.apiBaseUrl}${path}`;
     }
@@ -22,7 +57,7 @@ class ProductsCatalogManager {
             type: 'GET',
             dataType: 'json',
             success: (data) => {
-                this.products = Array.isArray(data) ? data : [];
+                this.products = this.sanitizeProductList(Array.isArray(data) ? data : []);
                 localStorage.setItem('products', JSON.stringify(this.products, null, 2));
                 console.log('Products loaded from API:', this.products);
                 this.displayAllProducts();
@@ -41,7 +76,7 @@ class ProductsCatalogManager {
             type: 'GET',
             dataType: 'json',
             success: (data) => {
-                this.products = data.products;
+                this.products = this.sanitizeProductList(data.products);
                 console.log('Products loaded from JSON:', this.products);
                 this.displayAllProducts();
             },
@@ -57,7 +92,7 @@ class ProductsCatalogManager {
         const storedProducts = localStorage.getItem('products');
         if (storedProducts) {
             try {
-                this.products = JSON.parse(storedProducts);
+                this.products = this.sanitizeProductList(JSON.parse(storedProducts));
                 console.log('Products loaded from localStorage');
                 this.displayAllProducts();
             } catch (error) {
@@ -123,12 +158,14 @@ class ProductsCatalogManager {
         const $container = $('#productsDisplay');
         $container.empty();
 
-        if (!products || products.length === 0) {
+        const cleanProducts = this.sanitizeProductList(products);
+
+        if (!cleanProducts || cleanProducts.length === 0) {
             $container.html('<p class="col-12 text-center text-muted">No products found.</p>');
             return;
         }
 
-        products.forEach(product => {
+        cleanProducts.forEach(product => {
             const card = `
                 <div class="col-md-6 col-lg-4 mb-4">
                     <div class="card product-card shadow-sm h-100">
