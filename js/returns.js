@@ -166,7 +166,7 @@ angular.module('returnsApp', [])
         /**
          * Cancel return form
          */
-        $scope.cancelReturnForm = function() {
+        $scope.cancelReturnForm = function(form) {
             console.log('Cancelling return form');
             $scope.selectedPurchaseId = null;
             $scope.returnData = {
@@ -180,24 +180,24 @@ angular.module('returnsApp', [])
             };
             
             // Reset form validation
-            if ($scope.returnForm) {
-                $scope.returnForm.$setPristine();
-                $scope.returnForm.$setUntouched();
+            if (form) {
+                form.$setPristine();
+                form.$setUntouched();
             }
         };
 
         /**
          * Submit return request
          */
-        $scope.submitReturn = function(purchase) {
+        $scope.submitReturn = function(purchase, form) {
             console.log('=== SUBMIT RETURN CLICKED ===');
-            console.log('Return Form Valid:', $scope.returnForm ? $scope.returnForm.$valid : 'N/A');
+            console.log('Return Form Valid:', form ? form.$valid : 'N/A');
             console.log('Return Data:', $scope.returnData);
 
             // Mark all fields as touched to display validation errors
-            if ($scope.returnForm) {
+            if (form) {
                 console.log('Marking all fields as touched...');
-                angular.forEach($scope.returnForm, function(field, name) {
+                angular.forEach(form, function(field, name) {
                     if (field && typeof field.$setTouched === 'function') {
                         field.$setTouched();
                         console.log(`Field "${name}" touched. Valid: ${field.$valid}`);
@@ -209,9 +209,9 @@ angular.module('returnsApp', [])
             }
 
             // Validate form
-            if ($scope.returnForm.$invalid) {
+            if (form.$invalid) {
                 console.log('Form validation FAILED');
-                console.log('Form errors:', $scope.returnForm.$error);
+                console.log('Form errors:', form.$error);
                 alert('Please fill out all required fields correctly.');
                 return;
             }
@@ -275,7 +275,7 @@ angular.module('returnsApp', [])
             }, 5000);
 
             // Close return form and refresh display
-            $scope.cancelReturnForm();
+            $scope.cancelReturnForm(form);
 
             // Send to server via AJAX (optional)
             $scope.sendReturnToServer(returnRequest);
