@@ -42,9 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const normalizedId = product.id !== undefined && product.id !== null
       ? product.id
       : `auto-${Date.now()}-${index}`;
+    const mongoId = product._id !== undefined && product._id !== null ? product._id : null;
 
     return {
       id: normalizedId,
+      dbId: mongoId,
       description,
       category,
       unitOfMeasure,
@@ -542,7 +544,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Product Management page: show delete button
         buttonSection = `
           <button type="button" class="btn btn-sm btn-danger w-100 remove-product-btn" 
-            data-product-id="${product.id}">Remove from List</button>
+            data-product-id="${product.id}"
+            data-product-db-id="${product.dbId || ''}">Remove from List</button>
         `;
       } else {
         // Home page: show add to cart button
@@ -612,33 +615,47 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function removeProduct(productId) {
+    const $button = $(`.remove-product-btn[data-product-id="${productId}"]`);
+    const productDbId = $button.data('product-db-id');
+
     if (!confirm('Are you sure you want to remove this product?')) {
       return;
     }
 
-    // Get products from localStorage
-    let products = [];
-    const storedProducts = localStorage.getItem('products');
-    if (storedProducts) {
-      try {
-        products = JSON.parse(storedProducts);
-      } catch (e) {
-        console.error('Error parsing localStorage products:', e);
-        return;
+    const deleteUrl = productDbId ? `/api/products/${encodeURIComponent(productDbId)}` : `/api/products/by-client-id/${encodeURIComponent(productId)}`;
+
+    $.ajax({
+      url: getApiUrl(deleteUrl),
+      type: 'DELETE',
+      dataType: 'json'
+    }).done((response) => {
+      console.log('Product deleted from API:', response);
+
+      let products = [];
+      const storedProducts = localStorage.getItem('products');
+      if (storedProducts) {
+        try {
+          products = JSON.parse(storedProducts);
+        } catch (e) {
+          console.error('Error parsing localStorage products:', e);
+          products = [];
+        }
       }
-    }
 
-    // Remove the product
-    products = products.filter(product => product.id !== productId);
+      products = sanitizeProductList(products).filter((product) => {
+        if (productDbId) {
+          return String(product.dbId || '') !== String(productDbId);
+        }
+        return String(product.id) !== String(productId);
+      });
 
-    // Save updated products to localStorage
-    localStorage.setItem('products', JSON.stringify(products));
-    console.log(`Product ${productId} removed`);
-
-    // Refresh the display
-    const $container = $('#searchResults');
-    displayProductCards(products, 'searchResults');
-    alert('Product removed successfully!');
+      localStorage.setItem('products', JSON.stringify(products, null, 2));
+      displayProductCards(products, 'searchResults');
+      alert('Product removed successfully!');
+    }).fail((xhr, status, error) => {
+      console.error('Failed to delete product from API:', error);
+      alert('Product could not be removed from the database.');
+    });
   }
 
   function addProductToCart(productId, quantity = 1, products = currentProducts) {

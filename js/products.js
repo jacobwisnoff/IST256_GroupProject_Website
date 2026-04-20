@@ -22,6 +22,7 @@ class ProductsCatalogManager {
 
         return {
             id: product.id !== undefined && product.id !== null ? product.id : `auto-${Date.now()}-${index}`,
+            dbId: product._id !== undefined && product._id !== null ? product._id : null,
             description,
             category,
             unitOfMeasure,
@@ -185,7 +186,7 @@ class ProductsCatalogManager {
                                 <small class="text-muted">ID: ${product.id}</small>
                             </div>
                             <div class="mt-auto">
-                                <a href="cart.html" class="btn btn-sm btn-primary w-100">View in Cart</a>
+                                    <a href="cart.html" class="btn btn-sm btn-primary w-100">View in Cart</a>
                             </div>
                         </div>
                     </div>
