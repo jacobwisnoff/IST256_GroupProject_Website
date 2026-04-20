@@ -1,6 +1,8 @@
 // AngularJS Checkout Application
 angular.module('checkoutApp', [])
     .controller('CheckoutController', ['$scope', '$http', function($scope, $http) {
+    const API_BASE_URL = 'https://130.203.136.203:3001';
+    const ORDER_ENDPOINT = `${API_BASE_URL}/api/order`;
         
         // Initialize checkout data object
         $scope.checkout = {
@@ -180,7 +182,7 @@ angular.module('checkoutApp', [])
         $scope.sendOrderToServer = function(orderData) {
             $http({
                 method: 'POST',
-                url: '/api/checkout',
+                url: ORDER_ENDPOINT,
                 data: orderData,
                 headers: { 'Content-Type': 'application/json' }
             }).then(

@@ -1,18 +1,41 @@
 // Shopping Cart Manager - Handles cart operations, search, and checkout
 class ShoppingCartManager {
     constructor() {
+        this.apiBaseUrl = 'https://130.203.136.203:3001';
         this.cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
         this.products = [];
         this.cartTaxRate = 0.08; // 8% tax rate
         this.init();
     }
 
+    getApiUrl(path) {
+        return `${this.apiBaseUrl}${path}`;
+    }
+
     // Initialize cart manager and load products
     init() {
-        this.loadProductsFromLocalStorage();
+        this.loadProducts();
         this.setupEventListeners();
-        this.displayProductJSON();
         this.updateCartDisplay();
+    }
+
+    loadProducts() {
+        $.ajax({
+            url: this.getApiUrl('/api/products'),
+            type: 'GET',
+            dataType: 'json',
+            success: (data) => {
+                this.products = Array.isArray(data) ? data : [];
+                localStorage.setItem('products', JSON.stringify(this.products, null, 2));
+                console.log('Products loaded from API:', this.products);
+                this.displayProductJSON();
+            },
+            error: (xhr, status, error) => {
+                console.warn('Failed to load products from API, using localStorage fallback:', error);
+                this.loadProductsFromLocalStorage();
+                this.displayProductJSON();
+            }
+        });
     }
 
     // Load products from localStorage (user-created products)
@@ -254,8 +277,20 @@ class ShoppingCartManager {
         localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
         sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
 
-        // Redirect to checkout page
-        window.location.href = 'checkout.html';
+        // Persist cart snapshot to backend before redirecting to checkout
+        $.ajax({
+            url: this.getApiUrl('/api/cart'),
+            type: 'POST',
+            data: JSON.stringify(checkoutData),
+            contentType: 'application/json',
+            dataType: 'json'
+        }).done((response) => {
+            console.log('Shopping cart submitted to API:', response);
+            window.location.href = 'checkout.html';
+        }).fail((xhr, status, error) => {
+            console.warn('Failed to submit shopping cart to API. Continuing to checkout.', error);
+            window.location.href = 'checkout.html';
+        });
     }
 
     // Utility: HTML escape to prevent XSS

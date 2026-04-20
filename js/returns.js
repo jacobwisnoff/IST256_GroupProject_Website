@@ -1,70 +1,9 @@
 // AngularJS Returns Application
 angular.module('returnsApp', [])
-    .controller('ReturnsController', ['$scope', function($scope) {
-        
-        // Sample purchase data - would typically come from a server/database
-        $scope.allPurchases = [
-            {
-                orderId: 'ORD-2026-001',
-                itemName: 'Wireless Bluetooth Headphones',
-                category: 'Electronics',
-                quantity: 1,
-                amount: 79.99,
-                date: new Date('2026-03-15'),
-                status: 'Delivered',
-                canReturn: true
-            },
-            {
-                orderId: 'ORD-2026-002',
-                itemName: 'Cotton T-Shirt (Blue)',
-                category: 'Clothing',
-                quantity: 2,
-                amount: 39.98,
-                date: new Date('2026-03-20'),
-                status: 'Delivered',
-                canReturn: true
-            },
-            {
-                orderId: 'ORD-2026-003',
-                itemName: 'The Great Gatsby',
-                category: 'Books',
-                quantity: 1,
-                amount: 14.99,
-                date: new Date('2026-02-10'),
-                status: 'Returned',
-                canReturn: false
-            },
-            {
-                orderId: 'ORD-2026-004',
-                itemName: 'Stainless Steel Water Bottle',
-                category: 'Home',
-                quantity: 1,
-                amount: 34.99,
-                date: new Date('2026-03-25'),
-                status: 'Pending',
-                canReturn: false
-            },
-            {
-                orderId: 'ORD-2026-005',
-                itemName: 'Yoga Mat and Carrying Strap',
-                category: 'Sports',
-                quantity: 1,
-                amount: 29.99,
-                date: new Date('2026-03-28'),
-                status: 'Delivered',
-                canReturn: true
-            },
-            {
-                orderId: 'ORD-2026-006',
-                itemName: 'LED Desk Lamp',
-                category: 'Electronics',
-                quantity: 1,
-                amount: 49.99,
-                date: new Date('2026-03-01'),
-                status: 'Delivered',
-                canReturn: true
-            }
-        ];
+    .controller('ReturnsController', ['$scope', '$http', function($scope, $http) {
+        const API_BASE_URL = 'https://130.203.136.203:3001';
+        const ORDERS_ENDPOINT = `${API_BASE_URL}/api/orders`;
+        const RETURN_ENDPOINT = `${API_BASE_URL}/api/return`;
 
         // Initialize filtered purchases
         $scope.filteredPurchases = [];
@@ -88,8 +27,55 @@ angular.module('returnsApp', [])
          */
         $scope.init = function() {
             console.log('Returns page initialized');
-            $scope.displayAllPurchases();
+            $scope.loadPurchasesFromDatabase();
         };
+
+        $scope.loadPurchasesFromDatabase = function() {
+            $http({
+                method: 'GET',
+                url: ORDERS_ENDPOINT
+            }).then(
+                function(response) {
+                    const orders = Array.isArray(response.data) ? response.data : [];
+                    $scope.allPurchases = flattenOrders(orders);
+                    $scope.displayAllPurchases();
+                    console.log('Loaded purchases from database:', $scope.allPurchases.length);
+                },
+                function(error) {
+                    console.error('Failed to load purchases from database:', error);
+                    $scope.allPurchases = [];
+                    $scope.displayAllPurchases();
+                }
+            );
+        };
+
+        function flattenOrders(orders) {
+            const purchases = [];
+
+            orders.forEach(function(order) {
+                const orderDbId = order._id;
+                const orderDate = order.timestamp ? new Date(order.timestamp) : new Date();
+                const orderId = order.orderId || (orderDbId ? String(orderDbId).slice(-8).toUpperCase() : 'ORDER');
+
+                (order.items || []).forEach(function(item, index) {
+                    const itemId = item.id !== undefined && item.id !== null ? item.id : index;
+                    purchases.push({
+                        orderDbId: orderDbId,
+                        itemId: itemId,
+                        orderId: orderId,
+                        itemName: item.description || item.itemName || 'Unknown Item',
+                        category: item.category || 'Uncategorized',
+                        quantity: item.quantity || 1,
+                        amount: Number((item.price || 0) * (item.quantity || 1)),
+                        date: orderDate,
+                        status: 'Delivered',
+                        canReturn: true
+                    });
+                });
+            });
+
+            return purchases;
+        }
 
         /**
          * Display all purchases on initial load
@@ -154,6 +140,8 @@ angular.module('returnsApp', [])
             // Reset form and set selected purchase
             $scope.selectedPurchaseId = purchase.orderId;
             $scope.returnData = {
+                orderDbId: purchase.orderDbId,
+                itemId: purchase.itemId,
                 orderId: purchase.orderId,
                 itemName: purchase.itemName,
                 amount: purchase.amount,
@@ -184,6 +172,8 @@ angular.module('returnsApp', [])
                 description: '',
                 condition: '',
                 shippingMethod: '',
+                orderDbId: null,
+                itemId: null,
                 agreeTerms: false
             };
             
@@ -249,6 +239,8 @@ angular.module('returnsApp', [])
             // Prepare return request data
             const returnRequest = {
                 returnId: 'RET-' + Date.now(),
+                orderDbId: purchase.orderDbId,
+                itemId: purchase.itemId,
                 orderId: purchase.orderId,
                 itemName: purchase.itemName,
                 category: purchase.category,
@@ -262,13 +254,6 @@ angular.module('returnsApp', [])
             };
 
             console.log('Return Request Submitted:', returnRequest);
-
-            // Update purchase status to "Returned"
-            const purchaseIndex = $scope.allPurchases.findIndex(p => p.orderId === purchase.orderId);
-            if (purchaseIndex !== -1) {
-                $scope.allPurchases[purchaseIndex].status = 'Returned';
-                $scope.allPurchases[purchaseIndex].canReturn = false;
-            }
 
             // Save to localStorage
             const returnHistory = JSON.parse(localStorage.getItem('returnHistory') || '[]');
@@ -289,7 +274,6 @@ angular.module('returnsApp', [])
 
             // Close return form and refresh display
             $scope.cancelReturnForm();
-            $scope.searchPurchases();
 
             // Send to server via AJAX (optional)
             $scope.sendReturnToServer(returnRequest);
@@ -299,9 +283,20 @@ angular.module('returnsApp', [])
          * Send return request to server (optional backend integration)
          */
         $scope.sendReturnToServer = function(returnRequest) {
-            // This would typically use $http to send data to backend
-            console.log('Simulating server submission of return request');
-            // Example: $http.post('/api/returns', returnRequest)...
+            $http({
+                method: 'POST',
+                url: RETURN_ENDPOINT,
+                data: returnRequest,
+                headers: { 'Content-Type': 'application/json' }
+            }).then(
+                function(response) {
+                    console.log('Return submitted to server successfully:', response);
+                    $scope.loadPurchasesFromDatabase();
+                },
+                function(error) {
+                    console.warn('Return submission failed, request saved locally:', error);
+                }
+            );
         };
 
         // Initialize on page load

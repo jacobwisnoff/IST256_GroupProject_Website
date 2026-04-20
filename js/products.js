@@ -1,14 +1,37 @@
 // Products Catalog Manager - Handles product browsing and search
 class ProductsCatalogManager {
     constructor() {
+        this.apiBaseUrl = 'https://130.203.136.203:3001';
         this.products = [];
         this.init();
     }
 
+    getApiUrl(path) {
+        return `${this.apiBaseUrl}${path}`;
+    }
+
     // Initialize products manager and load products
     init() {
-        this.loadProductsFromJSON();
+        this.loadProductsFromApi();
         this.setupEventListeners();
+    }
+
+    loadProductsFromApi() {
+        $.ajax({
+            url: this.getApiUrl('/api/products'),
+            type: 'GET',
+            dataType: 'json',
+            success: (data) => {
+                this.products = Array.isArray(data) ? data : [];
+                localStorage.setItem('products', JSON.stringify(this.products, null, 2));
+                console.log('Products loaded from API:', this.products);
+                this.displayAllProducts();
+            },
+            error: (xhr, status, error) => {
+                console.warn('Error loading products from API:', error);
+                this.loadProductsFromJSON();
+            }
+        });
     }
 
     // Load products from JSON file using AJAX

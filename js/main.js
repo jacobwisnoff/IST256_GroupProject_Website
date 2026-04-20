@@ -1,6 +1,48 @@
 // validation for sign-up form
 
 document.addEventListener('DOMContentLoaded', () => {
+  const API_BASE_URL = 'https://130.203.136.203:3001';
+
+  function getApiUrl(path) {
+    return `${API_BASE_URL}${path}`;
+  }
+
+  function postJson(path, payload) {
+    return $.ajax({
+      url: getApiUrl(path),
+      type: 'POST',
+      data: JSON.stringify(payload),
+      contentType: 'application/json',
+      dataType: 'json'
+    });
+  }
+
+  function loadProductsFromApi() {
+    return $.ajax({
+      url: getApiUrl('/api/products'),
+      type: 'GET',
+      dataType: 'json'
+    });
+  }
+
+  function mergeProducts(serverProducts = [], localProducts = []) {
+    const mergedMap = new Map();
+
+    serverProducts.forEach((product) => {
+      if (product && product.id !== undefined && product.id !== null) {
+        mergedMap.set(String(product.id), product);
+      }
+    });
+
+    localProducts.forEach((product) => {
+      if (product && product.id !== undefined && product.id !== null) {
+        mergedMap.set(String(product.id), product);
+      }
+    });
+
+    return Array.from(mergedMap.values());
+  }
+
   // elements for signup form
   const signupForm = document.getElementById('signupForm');
   const firstName = document.getElementById('firstName');
@@ -135,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('shoppers', JSON.stringify(shoppers, null, 2));
   }
 
-function displayShopper(shopper) {
+  function displayShopper(shopper) {
     if (!signupResult) return;
     const pre = document.createElement('pre');
     pre.className = 'bg-light p-3 border rounded';
@@ -144,7 +186,7 @@ function displayShopper(shopper) {
     signupResult.appendChild(pre);
   }
 
-  function saveShopper() {
+  async function saveShopper() {
     const shoppers = getShoppers();
     const shopUser = {
       id: Date.now(),
@@ -159,6 +201,13 @@ function displayShopper(shopper) {
 
     shoppers.push(shopUser);
     setShoppers(shoppers);
+
+    try {
+      const response = await postJson('/api/shopper', shopUser);
+      console.log('Shopper sent to API:', response);
+    } catch (error) {
+      console.warn('Failed to send shopper to API. Shopper kept in localStorage.', error);
+    }
 
     displayShopper(shopUser);
 
@@ -191,7 +240,7 @@ function displayShopper(shopper) {
 
   // submit handlers
   if (signupForm) {
-    signupForm.addEventListener('submit', (e) => {
+    signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       triedSubmitSignup = true;
 
@@ -199,7 +248,7 @@ function displayShopper(shopper) {
         return;
       }
 
-      const shopper = saveShopper();
+      const shopper = await saveShopper();
       console.log('Shopper saved', shopper);
 
       // Reset form after successful signup
@@ -295,7 +344,7 @@ function displayShopper(shopper) {
     return valid;
   }
 
-  function saveProduct() {
+  async function saveProduct() {
     const product = {
       id: Date.now(),
       description: productDescription.value.trim(),
@@ -318,6 +367,13 @@ function displayShopper(shopper) {
     products.push(product);
     localStorage.setItem('products', JSON.stringify(products, null, 2));
 
+    try {
+      const response = await postJson('/api/products', product);
+      console.log('Product sent to API:', response);
+    } catch (error) {
+      console.warn('Failed to send product to API. Product kept in localStorage.', error);
+    }
+
     // Display the saved product
     if (productResult) {
       const pre = document.createElement('pre');
@@ -332,7 +388,7 @@ function displayShopper(shopper) {
 
   // Product form submit handler
   if (productForm) {
-    productForm.addEventListener('submit', (e) => {
+    productForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       triedSubmitProduct = true;
 
@@ -340,7 +396,7 @@ function displayShopper(shopper) {
         return;
       }
 
-      const product = saveProduct();
+      const product = await saveProduct();
       console.log('Product saved', product);
 
       // Reset form after successful submission
@@ -391,7 +447,6 @@ function displayShopper(shopper) {
   }
 
   function getAllProducts(callback) {
-    // Load products only from localStorage (user-created products)
     let userProducts = [];
     const storedProducts = localStorage.getItem('products');
     if (storedProducts) {
@@ -401,7 +456,16 @@ function displayShopper(shopper) {
         console.error('Error parsing localStorage products:', e);
       }
     }
-    callback(userProducts);
+
+    loadProductsFromApi()
+      .done((apiProducts) => {
+        const mergedProducts = mergeProducts(apiProducts || [], userProducts);
+        callback(mergedProducts);
+      })
+      .fail((xhr, status, error) => {
+        console.warn('Failed to load products from API, using localStorage only:', error);
+        callback(userProducts);
+      });
   }
 
   // Store current products for cart operations
