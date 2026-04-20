@@ -415,6 +415,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const response = await postJson('/api/products', product);
+      if (response && response.productId) {
+        product.dbId = response.productId;
+        const updatedProducts = sanitizeProductList(products.map((item) => {
+          if (String(item.id) === String(product.id)) {
+            return { ...item, dbId: response.productId };
+          }
+          return item;
+        }));
+        localStorage.setItem('products', JSON.stringify(updatedProducts, null, 2));
+      }
       console.log('Product sent to API:', response);
     } catch (error) {
       console.warn('Failed to send product to API. Product kept in localStorage.', error);
@@ -642,15 +652,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      products = sanitizeProductList(products).filter((product) => {
-        if (productDbId) {
-          return String(product.dbId || '') !== String(productDbId);
-        }
-        return String(product.id) !== String(productId);
+      const remainingProducts = sanitizeProductList(products).filter((product) => {
+        const matchesDbId = productDbId && String(product.dbId || '') === String(productDbId);
+        const matchesClientId = String(product.id) === String(productId);
+        return !(matchesDbId || matchesClientId);
       });
 
-      localStorage.setItem('products', JSON.stringify(products, null, 2));
-      displayProductCards(products, 'searchResults');
+      localStorage.setItem('products', JSON.stringify(remainingProducts, null, 2));
+      displayProductCards(remainingProducts, 'searchResults');
       alert('Product removed successfully!');
     }).fail((xhr, status, error) => {
       console.error('Failed to delete product from API:', error);
